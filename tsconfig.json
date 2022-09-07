@@ -3,7 +3,11 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "baseUrl": ".",
-        "paths": {},
+        "paths": {
+            "src/*": [
+                "src/*"
+            ]
+        },
         "inlineSourceMap": true,
         "inlineSources": true,
         "module": "ESNext",

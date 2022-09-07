@@ -4,7 +4,6 @@ import { createApp } from "vue";
 import { DEFAULT_SETTINGS } from "src/default_settings";
 import { ObVuePlugin, ObVueSettings } from "src/obsidian_vue.type";
 import { SettingsManagerConfig } from "./Setting";
-import Hello from "../vue/components/Hello.vue";
 
 export class SettingsManager {
   app: App;
@@ -49,7 +48,5 @@ export class SettingsManager {
     this.uiObVueSettings(containerEl);
   }
 
-  uiObVueSettings(containerEl: HTMLElement) {
-    createApp(Hello).mount(containerEl);
-  }
+  uiObVueSettings(containerEl: HTMLElement) {}
 }

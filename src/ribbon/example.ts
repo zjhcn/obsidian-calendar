@@ -1,17 +1,29 @@
-import { Notice, Plugin } from "obsidian";
+import { Menu, Notice, Plugin } from "obsidian";
+import { APP_NAME } from "src/default_settings";
 
 // This creates an icon in the left ribbon.
 export function exampleRibbon(plugin: Plugin) {
-  const ribbonIconEl = plugin.addRibbonIcon(
-    "dice",
-    "Sample Plugin",
-    (evt: MouseEvent) => {
-      // Called when the user clicks the icon.
-      new Notice("This is a notice!");
-    }
-  );
+  plugin.addRibbonIcon("dice", APP_NAME, (event) => {
+    const menu = new Menu();
 
-  // Perform additional things with the ribbon
-  ribbonIconEl.addClass("my-plugin-ribbon-class");
-  return ribbonIconEl;
+    menu.addItem((item) =>
+      item
+        .setTitle("Copy")
+        .setIcon("documents")
+        .onClick(() => {
+          new Notice("Copied");
+        })
+    );
+
+    menu.addItem((item) =>
+      item
+        .setTitle("Paste")
+        .setIcon("paste")
+        .onClick(() => {
+          new Notice("Pasted");
+        })
+    );
+
+    menu.showAtMouseEvent(event);
+  });
 }

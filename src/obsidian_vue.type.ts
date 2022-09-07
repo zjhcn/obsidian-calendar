@@ -1,8 +1,12 @@
+import { Options } from "@toast-ui/calendar";
 import { Plugin } from "obsidian";
 
-export interface TapMap {}
-
-export interface ObVueSettings {}
+export interface ObVueSettings {
+  extensions: string[];
+  options: Required<Options>;
+  eventFilter: string;
+  template: Record<string, string>;
+}
 
 export interface ISetting {
   settings: ObVueSettings;

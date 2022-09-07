@@ -1,0 +1,95 @@
+// common
+.calendar-container {
+  --common-background-color: white;
+  --common-border: 1px solid #e5e5e5;
+
+  --common-primary-color: #515ce6;
+  --common-grid-selection-background-color: rgba(81, 92, 230, 0.05);
+  --common-grid-selection-border: 1px solid #515ce6;
+
+  --common-text-color: #333;
+  --common-day-name-color: var(--common-text-color);
+  --common-holiday-color: #ff4040;
+  --common-saturday-color: var(--common-text-color);
+  --common-today-color: #fff;
+}
+// week
+.calendar-container {
+  --week-day-name-border-left: none;
+  --week-day-name-border-top: var(--common-border);
+  --week-day-name-border-bottom: var(--common-border);
+  --week-day-name-background-color: inherit;
+
+  --week-day-grid-border-right: var(--common-border);
+  --week-day-grid-background-color: inherit;
+  --week-day-grid-left-border-left: var(--common-border);
+  --week-day-grid-left-background-color: inherit;
+  --week-day-grid-left-width: 72px;
+
+  --week-time-grid-border-right: var(--common-border);
+  --week-time-grid-left-background-color: inherit;
+  --week-time-grid-left-border-right: var(--common-border);
+  --week-time-grid-left-width: 72px;
+  --week-time-grid-left-additional-time-zone-background-color: var(
+    --common-background-color
+  );
+  --week-time-grid-hour-line-border-bottom: var(--common-border);
+  --week-time-grid-half-hour-line-border-bottom: var(--common-border);
+
+  --week-now-indicator-label-color: var(--common-primary-color);
+  --week-now-indicator-past-border: 1px dashed #515ce6;
+  --week-now-indicator-bullet-background-color: var(--common-primary-color);
+  --week-now-indicator-today-border: var(--common-grid-selection-border);
+  --week-now-indicator-future-border: none;
+
+  --week-past-time-color: #bbb;
+  --week-future-time-color: var(--common-text-color);
+
+  --week-weekend-background-color: inherit;
+
+  --week-today-color: inherit;
+  --week-today-background-color: var(--common-grid-selection-background-color);
+
+  --week-past-day-color: #bbb;
+
+  --week-panel-resizer-border: var(--common-border);
+
+  --week-grid-selection-background-color: var(
+    --common-grid-selection-background-color
+  );
+  --week-grid-selection-border: var(--common-grid-selection-border);
+}
+// month
+.calendar-container {
+  --month-day-except-this-month-color: inherit;
+
+  --month-day-name-border-left: var(--week-day-name-border-left);
+  --month-day-name-background-color: var(--week-day-name-background-color);
+
+  --month-holiday-except-this-month-color: rgba(255, 64, 64, 0.4);
+
+  --month-more-view-border: 1px solid #d5d5d5;
+  --month-more-view-box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+  --month-more-view-background-color: var(--common-background-color);
+  --month-more-view-width: ;
+  --month-more-view-height: ;
+  --month-more-view-title-background-color: inherit;
+  --month-grid-cell-header-height: 31;
+  --month-grid-cell-height-height: ;
+
+  --month-weekend-background-color: var(--common-background-color);
+}
+
+.calendar-details {
+  & > & {
+    padding-left: 1em;
+  }
+
+  .calendar-summary {
+    margin-bottom: 0.75em;
+  }
+}
+
+.calendar-options-modal {
+  width: 700px;
+}

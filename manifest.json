@@ -1,9 +1,9 @@
 {
-    "id": "obsidian-plugin-template-vue",
-    "name": "PluginTemplate",
+    "id": "obsidian-calendar",
+    "name": "Calendar",
     "version": "0.0.1",
     "minAppVersion": "0.16.0",
-    "description": "PluginTemplate",
+    "description": "Calendar",
     "author": "Hank",
     "authorUrl": "https://github.com/zjhcn",
     "isDesktopOnly": false

@@ -1,36 +1,38 @@
-import { Plugin } from "obsidian";
+import { Plugin, WorkspaceLeaf } from "obsidian";
 import { App } from "vue";
 
 import { createPiniaApp } from "src/vue";
 
 import { DEFAULT_SETTINGS } from "./default_settings";
-import { ISetting } from "./obsidian_vue.type";
+import { ISetting, ObVueSettings } from "./obsidian_vue.type";
 import { ObVueSettingsTab } from "./setting/Setting";
 
 import { exampleStatusBar } from "./status-bar/example";
-import { exampleCommand } from "./command/example";
-import { exampleComplexCommand } from "./command/example-complex";
-import { exampleEditorCommand } from "./command/example-editor";
+import { registerCommand } from "./command";
 import { exampleRibbon } from "./ribbon/example";
-import { useDefaultSettingStore } from "./vue/store";
+import { useSettingStore } from "./vue/store";
+import { CalendarView, VIEW_TYPE_CALENDAR } from "./views/Calendar";
 
-export default class ObsidianVueTemplate extends Plugin implements ISetting {
+import "./style/styles.scss";
+import { toRaw } from "vue";
+
+export default class Calendar extends Plugin implements ISetting {
   settingsTab!: ObVueSettingsTab;
-  settingsStore!: ReturnType<typeof useDefaultSettingStore>;
+  settingsStore!: ReturnType<typeof useSettingStore>;
   dummyVueApp!: App;
   basePath!: string;
 
-  get settings() {
-    return this.settingsStore.settings;
+  get settings(): ObVueSettings {
+    return toRaw(this.settingsStore.defaultSetting);
   }
 
-  set settings(newSetting: any) {
+  set settings(newSetting: ObVueSettings) {
     this.settingsStore.reset(newSetting);
   }
 
   async onload() {
     this.dummyVueApp = createPiniaApp(this);
-    this.settingsStore = useDefaultSettingStore();
+    this.settingsStore = useSettingStore();
 
     await this.loadSettings();
 
@@ -41,12 +43,17 @@ export default class ObsidianVueTemplate extends Plugin implements ISetting {
       },
     });
 
+    this.registerView(
+      VIEW_TYPE_CALENDAR,
+      (leaf: WorkspaceLeaf) => new CalendarView(leaf)
+    );
+
+    this.registerExtensions(this.settings.extensions, VIEW_TYPE_CALENDAR);
+
     exampleRibbon(this);
     exampleStatusBar(this);
 
-    exampleCommand(this);
-    exampleComplexCommand(this);
-    exampleEditorCommand(this);
+    registerCommand(this);
   }
 
   onunload() {}
