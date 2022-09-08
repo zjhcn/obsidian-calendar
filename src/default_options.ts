@@ -1,19 +1,19 @@
 import { Options } from "@toast-ui/calendar";
 import { t } from "./lang/helpers";
 
-const dayNames: [string, string, string, string, string, string, string] = [
-  t("sun"),
-  t("mon"),
-  t("tue"),
-  t("wed"),
-  t("thu"),
-  t("fri"),
-  t("sat"),
-];
+export const dayNames: [
+  string,
+  string,
+  string,
+  string,
+  string,
+  string,
+  string
+] = [t("sun"), t("mon"), t("tue"), t("wed"), t("thu"), t("fri"), t("sat")];
 
 export const DEFAULT_EVENT_FILTER = "!!event.isVisible";
 
-export const DEFAULT_OPTIONS: Options = {
+export const DEFAULT_OPTIONS: Required<Options> = {
   // Disable GA
   usageStatistics: false,
   useFormPopup: false,
@@ -54,7 +54,7 @@ export const DEFAULT_OPTIONS: Options = {
       },
     ],
   },
-};
+} as any;
 
 export const DEFAULT_TEMPLATE = {
   taskTitle: t("Task"),
@@ -140,8 +140,8 @@ export const monthTheme = {
     backgroundColor: "var(--month-more-view-title-background-color)",
   },
   gridCell: {
-    headerHeight: "var(--month-grid-cell-header-height)",
-    footerHeight: "var(--month-grid-cell-height-height)",
+    // headerHeight: "var(--month-grid-cell-header-height)",
+    // footerHeight: "var(--month-grid-cell-height-height)",
   },
   weekend: { backgroundColor: "var(--month-weekend-background-color)" },
 }; // end of month
@@ -181,3 +181,24 @@ export const DEFAULT_THEME = {
   month: monthTheme,
   common: commonTheme,
 }; // end of theme
+
+export type CalendarInfo = {
+  id: string;
+  name: string;
+  color?: string;
+  backgroundColor?: string;
+  dragBackgroundColor?: string;
+  borderColor?: string;
+};
+export const DEFAULT_CALENDARS: CalendarInfo[] = [
+  {
+    id: "cal1",
+    name: "Personal",
+    backgroundColor: "#03bd9e",
+  },
+  {
+    id: "cal2",
+    name: "Work",
+    backgroundColor: "#00a9ff",
+  },
+];

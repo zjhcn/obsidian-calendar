@@ -4,6 +4,14 @@ import { createApp } from "vue";
 import { DEFAULT_SETTINGS } from "src/default_settings";
 import { ObVuePlugin, ObVueSettings } from "src/obsidian_vue.type";
 import { SettingsManagerConfig } from "./Setting";
+import { useSettingStore } from "src/vue/store";
+import {
+  uiOptionsCommon,
+  uiOptionsMonth,
+  uiOptionsTemplate,
+  uiOptionsWeek,
+} from "./Options";
+import { t } from "src/lang/helpers";
 
 export class SettingsManager {
   app: App;
@@ -43,10 +51,16 @@ export class SettingsManager {
   constructUI(containerEl: HTMLElement): void {
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Settings for Vue plugin." });
+    containerEl.createEl("h2", { text: t("Settings for Calendar plugin.") });
 
     this.uiObVueSettings(containerEl);
   }
 
-  uiObVueSettings(containerEl: HTMLElement) {}
+  uiObVueSettings(containerEl: HTMLElement) {
+    const { settings, save } = useSettingStore();
+    uiOptionsCommon(containerEl, settings, save);
+    uiOptionsWeek(containerEl, settings, save);
+    uiOptionsMonth(containerEl, settings, save);
+    uiOptionsTemplate(containerEl, settings, save);
+  }
 }

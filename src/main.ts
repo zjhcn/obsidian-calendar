@@ -54,6 +54,8 @@ export default class Calendar extends Plugin implements ISetting {
     exampleStatusBar(this);
 
     registerCommand(this);
+
+    this.addSettingTab(this.settingsTab);
   }
 
   onunload() {}

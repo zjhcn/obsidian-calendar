@@ -53,3 +53,17 @@ export function callExpression(code: string, params: Record<string, any>) {
   const fn = new Function(...keys, code);
   return fn(...values);
 }
+
+export function abstractEqual(source: any, other: any) {
+  let abstractEqual = source == other;
+  if (abstractEqual) {
+    return true;
+  }
+  switch (typeof source) {
+    case "boolean":
+      return String(source) === other;
+
+    default:
+      return String(source) === String(other);
+  }
+}

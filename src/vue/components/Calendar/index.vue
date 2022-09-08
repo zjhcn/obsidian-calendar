@@ -15,8 +15,9 @@ import { onMounted, ref } from "vue";
 import { PropType } from "vue-demi";
 
 import { useSettingStore } from "../../store/settings";
+import { CalendarInfo } from "../../../default_options";
 
-const { leaf, mounted, options, template, eventFilter } = defineProps({
+const { leaf, mounted, options, template, eventFilter, calendars } = defineProps({
     leaf: {
         type: Object as PropType<WorkspaceLeaf>,
         required: true,
@@ -24,7 +25,8 @@ const { leaf, mounted, options, template, eventFilter } = defineProps({
     mounted: Function as PropType<(calendar: Calendar) => void>,
     options: Object as PropType<Options>,
     template: Object as PropType<Record<string, string>>,
-    eventFilter: String
+    eventFilter: String,
+    calendars: Array as PropType<CalendarInfo[]>,
 });
 const popupRef = ref<Element | null>(null);
 
@@ -34,28 +36,15 @@ const calendarRef = ref<Calendar | null>(null);
 
 onMounted(() => {
     const { options: finalOptions, template: finalTemplate } = settingStore.getOptions({
-        options: {
-            ...options,
-            calendars: [
-                {
-                    id: "cal1",
-                    name: "Personal",
-                    backgroundColor: "#03bd9e",
-                },
-                {
-                    id: "cal2",
-                    name: "Work",
-                    backgroundColor: "#00a9ff",
-                },
-            ],
-        },
+        options,
         template,
+        eventFilter,
+        calendars,
     });
 
     if (!container.value) {
         return;
     }
-    console.log("finalOptions", finalOptions);
     const calendar = (calendarRef.value = new Calendar(container.value, finalOptions));
     mounted && mounted(calendarRef.value as Calendar);
 
@@ -66,7 +55,8 @@ onMounted(() => {
             view: finalOptions.defaultView as any,
             options: finalOptions,
             template: finalTemplate,
-            eventFilter: eventFilter as any
+            eventFilter: eventFilter as any,
+            calendars: calendars as any
         });
     calendar.createEvents(formatEvents([
         {
@@ -174,12 +164,27 @@ fdsafdsafa
         calendar.updateEvent(id, calendarId, changes);
     });
 
+    calendar.on('beforeCreateEvent', function (info) {
+        console.log('beforeCreateEvent', info);
+    });
+    calendar.on('beforeUpdateEvent', function (info) {
+        console.log('beforeUpdateEvent', info);
+    });
+    calendar.on('beforeDeleteEvent', function (info) {
+        console.log('beforeDeleteEvent', info);
+    });
     calendar.on('selectDateTime', function (info) {
-        console.log('selectDateTime', info);
+        console.log('selectDateTime', info, calendar);
+
+        setTimeout(() => {
+            calendar.clearGridSelections();
+            // info.gridSelectionElements.forEach(el => el?.remove());
+        }, 1000);
     });
 
     calendar.on('clickEvent', function (info) {
         console.log('clickEvent', info, popupRef.value);
+        popupRef.value?.empty();
         MarkdownRenderer.renderMarkdown(
             info.event.body,
             popupRef.value as any,

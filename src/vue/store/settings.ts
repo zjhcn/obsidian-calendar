@@ -4,18 +4,11 @@ import Calendar from "@toast-ui/calendar";
 import { DEFAULT_THEME } from "src/default_options";
 import { OptionsModal } from "../../modal/OptionsModal";
 import { toRaw } from "vue";
-import { ObVueSettings } from "../../obsidian_vue.type";
+import { CalendarOptions, ObVueSettings } from "../../obsidian_vue.type";
 import { useObsidianStore } from ".";
 import { View } from "obsidian";
 import { TitleNode } from "./toastui";
 import { callExpression, getEventFilterFn } from "src/utils";
-
-export type CalendarOptions = {
-  view?: "week" | "month" | "day";
-  options: Options;
-  eventFilter: string;
-  template: Record<string, string>;
-};
 
 export interface FileItem {
   options: CalendarOptions;
@@ -25,7 +18,6 @@ export interface FileItem {
 export type SettingState = {
   defaultSetting: ObVueSettings;
   viewMap: Map<View, FileItem>;
-  modalMap: Map<string, OptionsModal>;
 };
 
 export const useSettingStore = defineStore("settings", {
@@ -81,6 +73,9 @@ export const useSettingStore = defineStore("settings", {
         toRaw(this.settings.options),
         options.options
       ) as Options;
+      ret.calendars = toRaw(
+        options.calendars ? options.calendars : this.settings.calendars
+      );
       ret.template = templateFn;
       ret.theme = DEFAULT_THEME;
       ret.eventFilter = getEventFilterFn(this.settings.eventFilter);

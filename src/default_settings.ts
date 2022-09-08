@@ -1,4 +1,5 @@
 import {
+  DEFAULT_CALENDARS,
   DEFAULT_EVENT_FILTER,
   DEFAULT_OPTIONS,
   DEFAULT_TEMPLATE,
@@ -24,4 +25,5 @@ export const DEFAULT_SETTINGS: ObVueSettings = {
   options: DEFAULT_OPTIONS as any,
   template: DEFAULT_TEMPLATE,
   eventFilter: DEFAULT_EVENT_FILTER,
+  calendars: DEFAULT_CALENDARS,
 };
