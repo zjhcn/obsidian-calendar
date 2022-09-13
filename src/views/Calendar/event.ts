@@ -1,5 +1,4 @@
-import { TZDate } from "@toast-ui/calendar";
-import { Pos } from "obsidian";
+import Calendar, { TZDate } from "@toast-ui/calendar";
 import { CalendarSection } from "src/obsidian_vue.type";
 
 export declare type DateType = Date | string | number | TZDate;
@@ -11,6 +10,10 @@ let uid = 0;
 const id = () => `calendar_event_${uid++}`;
 
 export class CalendarEvent {
+  /**
+   * Calendar instance
+   */
+  readonly calendar: Calendar;
   /**
    * `Optional` unique id for various use
    */
@@ -50,11 +53,7 @@ export class CalendarEvent {
   /**
    * Determine whether the event is shown or hidden
    */
-  isVisible?: boolean;
-  /**
-   * Determine whether the event is read-only
-   */
-  isReadOnly?: boolean;
+  isVisible: boolean = true;
   /**
    * Text color of the event element
    */
@@ -85,6 +84,7 @@ export class CalendarEvent {
   };
 
   constructor(
+    calendar: Calendar,
     title: string,
     calendarId: string,
     category: EventCategory = "time"
@@ -94,6 +94,7 @@ export class CalendarEvent {
     this.calendarId = calendarId;
     this.category = category;
     this.raw = {} as any;
+    this.calendar = calendar;
   }
 
   get isAllday() {
@@ -101,8 +102,25 @@ export class CalendarEvent {
   }
 
   set isAllDay(bool: boolean) {
-    console.log(bool);
     this.category = "allday";
+  }
+
+  private _isReadOnly: boolean = false;
+  /**
+   * Determine whether the event is read-only
+   */
+  get isReadOnly(): boolean {
+    const view = this.calendar.getViewName();
+    if (view === "month") {
+      return this._isReadOnly;
+    }
+
+    // view === week or day
+    return this.category !== "time" || this._isReadOnly;
+  }
+
+  set isReadOnly(bool: boolean) {
+    this._isReadOnly = bool;
   }
 
   /**
@@ -114,11 +132,6 @@ export class CalendarEvent {
     }
 
     return this.raw.body.map((c) => c.content).join("\n");
-  }
-
-  initDate(start: DateType, end: DateType) {
-    this.start = start ?? end;
-    this.end = end ?? start;
   }
 
   addRaw(type: "heading" | "body" | "comment", section: CalendarSection) {

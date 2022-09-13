@@ -1,4 +1,4 @@
-import { EventObject } from "@toast-ui/calendar";
+import Calendar, { EventObject } from "@toast-ui/calendar";
 import {
   App,
   CachedMetadata,
@@ -23,13 +23,14 @@ export class CalendarData {
   calendars: string[] | CalendarInfo[] = [];
   constructor(public plugin: CalendarPlugin, public app: App = plugin.app) {}
 
-  async loadData(data: string, file: TFile) {
+  async loadData(calendar: Calendar, data: string, file: TFile) {
     const cache = this.app.metadataCache.getFileCache(file);
     if (!cache) {
       throw new Error("file cache not find?");
     }
 
     const parsed = parseMDToEvents(
+      calendar,
       data,
       this.normalizationSections(data, cache, file)
     );

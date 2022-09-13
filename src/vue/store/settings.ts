@@ -1,7 +1,11 @@
 import { Options } from "@toast-ui/calendar";
 import { defineStore } from "pinia";
 import Calendar from "@toast-ui/calendar";
-import { DEFAULT_THEME, getCalendarName } from "src/default_options";
+import {
+  DEFAULT_THEME,
+  DEFAULT_TIME_ZONE,
+  getCalendarName,
+} from "src/default_options";
 import { toRaw } from "vue";
 import { CalendarOptions, ObVueSettings } from "../../obsidian_vue.type";
 import { useObsidianStore } from ".";
@@ -43,6 +47,11 @@ export const useSettingStore = defineStore("settings", {
     reset(settings: Partial<ObVueSettings>) {
       this.defaultSetting = settings as any;
     },
+    getTimezone(
+      options: Partial<CalendarOptions> = {} as any
+    ): typeof DEFAULT_TIME_ZONE {
+      return DEFAULT_TIME_ZONE;
+    },
     getOptions(options: Partial<CalendarOptions> = {} as any) {
       const template = Object.assign(
         {},
@@ -81,6 +90,7 @@ export const useSettingStore = defineStore("settings", {
       );
       ret.template = templateFn;
       ret.theme = DEFAULT_THEME;
+      ret.timezone = this.getTimezone(options);
       ret.eventFilter = getEventFilterFn(this.settings.eventFilter);
 
       return ret;

@@ -13,7 +13,6 @@ import { createApp, App } from "vue";
 import CalendarComp from "../../vue/components/Calendar/index.vue";
 import { registerDirectives } from "src/vue/directives";
 import { pinia, useSettingStore } from "src/vue/store";
-import { formatEvents } from "src/utils";
 import { CalendarInfo } from "src/default_options";
 import { extensions } from "src/default_settings";
 import { t } from "src/lang/helpers";
@@ -46,7 +45,6 @@ export class CalendarView extends TextFileView {
     app.workspace.onLayoutReady(async () => {
       this.compatibilityMode = extensions.includes(this.file.extension);
     });
-    this.calendarData.loadData(data, this.file);
     this.init();
   }
 
@@ -67,10 +65,7 @@ export class CalendarView extends TextFileView {
         // this.data = JSON.stringify(payload);
         // this.requestSave();
       },
-      mounted: (calendar: Calendar) => {
-        this.calendar = calendar;
-        this.renderCalendar();
-      },
+      mounted: this.mounted.bind(this),
     });
     registerDirectives(this.vCalendar);
     this.vCalendar.use(pinia);
@@ -81,6 +76,13 @@ export class CalendarView extends TextFileView {
         },
       })
     );
+  }
+
+  mounted(calendar: Calendar) {
+    console.log("calendar", calendar);
+    this.calendar = calendar;
+    this.calendarData.loadData(calendar, this.data, this.file);
+    this.renderCalendar();
   }
 
   renderCalendar() {
@@ -97,8 +99,10 @@ export class CalendarView extends TextFileView {
     this.calendar.setOptions(options);
     this.calendar.setTheme(options.theme);
     this.calendar.setCalendars(options.calendars as CalendarInfo[]);
-    options.defaultView && this.calendar.changeView(options.defaultView);
-    this.calendar.createEvents(formatEvents(this.calendarData.events));
+    this.calendar.createEvents(this.calendarData.events);
+    setTimeout(() => {
+      options.defaultView && this.calendar?.changeView(options.defaultView);
+    }, 160);
   }
 
   clear() {}

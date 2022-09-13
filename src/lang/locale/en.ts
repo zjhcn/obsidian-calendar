@@ -128,5 +128,5 @@ export default {
   Milestone: "Milestone",
   Task: "Task",
   "All Day": "All Day",
-  "HH:ss": "HH:ss",
+  "HH:mm": "HH:mm",
 };

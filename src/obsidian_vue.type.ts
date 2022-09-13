@@ -1,4 +1,5 @@
 import { Options } from "@toast-ui/calendar";
+import { duration, Moment, unitOfTime } from "moment";
 import { Plugin, Pos, ReferenceCache, SectionCache, TFile } from "obsidian";
 import { CalendarInfo } from "./default_options";
 
@@ -37,14 +38,37 @@ export interface CalendarReferenceCache extends ReferenceCache {
   isEmbed?: boolean;
 }
 
+export type SectionCommentDataDuration = `${number}${" " | ""}${
+  | unitOfTime.Base
+  | ""}`;
+
+export interface SectionCommentData {
+  end: string;
+  start: string;
+  /**
+   * Moment add
+   * @see {@link https://momentjs.com/docs/#/manipulating/add/}
+   * @example
+   *    - 1 d
+   *    - 1d
+   *    - 30 m
+   *    - 30m
+   *    - 30 minutes
+   *    - 30minutes
+   */
+  duration: SectionCommentDataDuration;
+}
+
 export interface SectionCode {
   raw: string;
   lang?: string;
   data?: any;
 }
 
+export type SectionCommentType = "Event" | "Calendar" | "Options";
+
 export interface SectionComment extends SectionCode {
-  subject?: string;
+  subject?: SectionCommentType;
 }
 
 export interface CalendarSection extends SectionCache {

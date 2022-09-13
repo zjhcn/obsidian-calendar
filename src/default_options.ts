@@ -1,4 +1,4 @@
-import { Options } from "@toast-ui/calendar";
+import { Options, TZDate } from "@toast-ui/calendar";
 import { t } from "./lang/helpers";
 
 export const dayNames: [
@@ -12,6 +12,17 @@ export const dayNames: [
 ] = [t("sun"), t("mon"), t("tue"), t("wed"), t("thu"), t("fri"), t("sat")];
 
 export const DEFAULT_EVENT_FILTER = "!!event.isVisible";
+
+export const DEFAULT_TIME_ZONE = {
+  zones: [
+    {
+      timezoneName: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
+  ],
+  //   customOffsetCalculator: (timezoneName: string, timestamp: number) => {
+  //     return new TZDate(timestamp).tz(timezoneName).getTimezoneOffset();
+  //   },
+};
 
 export const DEFAULT_OPTIONS: Required<Options> = {
   // Disable GA
@@ -47,13 +58,7 @@ export const DEFAULT_OPTIONS: Required<Options> = {
   },
 
   gridSelection: false,
-  timezone: {
-    zones: [
-      {
-        timezoneName: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-    ],
-  },
+  timezone: DEFAULT_TIME_ZONE,
 } as any;
 
 export const DEFAULT_TEMPLATE = {
@@ -61,9 +66,9 @@ export const DEFAULT_TEMPLATE = {
   milestoneTitle: t("Milestone"),
   alldayTitle: t("All Day"),
   // 时间轴时间
-  timegridDisplayPrimaryTime: t("HH:ss"),
-  timegridDisplayTime: t("HH:ss"),
-  timegridNowIndicatorLabel: t("HH:ss"),
+  timegridDisplayPrimaryTime: t("HH:mm"),
+  timegridDisplayTime: t("HH:mm"),
+  timegridNowIndicatorLabel: t("HH:mm"),
 }; // end of template
 
 export const weekTheme = {

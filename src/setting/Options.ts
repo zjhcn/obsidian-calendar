@@ -521,7 +521,7 @@ export function uiOptionsTemplate(
     content,
     {
       name: t("timegridDisplayPrimaryTime"),
-      tooltip: t("Default") + t(":") + t("HH:ss"),
+      tooltip: t("Default") + t(":") + t("HH:mm"),
       desc: createFragment((frag) => {
         frag.appendText(
           t("Hours of primary time zone in weekly/daily view") + "  "
@@ -545,7 +545,7 @@ export function uiOptionsTemplate(
     content,
     {
       name: t("timegridDisplayTime"),
-      tooltip: t("Default") + t(":") + t("HH:ss"),
+      tooltip: t("Default") + t(":") + t("HH:mm"),
       desc: createFragment((frag) => {
         frag.appendText(
           t(
@@ -571,7 +571,7 @@ export function uiOptionsTemplate(
     content,
     {
       name: t("timegridNowIndicatorLabel"),
-      tooltip: t("Default") + t(":") + t("HH:ss"),
+      tooltip: t("Default") + t(":") + t("HH:mm"),
       desc: createFragment((frag) => {
         frag.appendText(t("Current time in weekly/daily view") + "  ");
         createLink(

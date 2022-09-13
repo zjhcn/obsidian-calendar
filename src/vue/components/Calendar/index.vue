@@ -9,9 +9,9 @@ import "@toast-ui/calendar/dist/toastui-calendar.min.css";
 import { debounce, Plugin, TFile } from "obsidian";
 import { WorkspaceLeaf } from "obsidian";
 import { Theme } from "src/default_options";
-import { CalendarSection } from "src/obsidian_vue.type";
 import { VIEW_TYPE_CALENDAR } from "src/views/Calendar";
 import { CalendarEvent } from "src/views/Calendar/event";
+import { useSettingStore } from "src/vue/store";
 import { onBeforeUnmount } from "vue";
 import { onMounted, ref } from "vue";
 import { PropType } from "vue-demi";
@@ -42,7 +42,13 @@ onMounted(() => {
     if (!container.value) {
         return;
     }
-    const calendar = (calendarRef.value = new Calendar(container.value, options));
+    const store = useSettingStore();
+    let processedOptions: Options = options as any;
+    if (!options) {
+        processedOptions = {};
+    }
+    processedOptions.timezone = store.getTimezone();
+    const calendar = (calendarRef.value = new Calendar(container.value, processedOptions));
     mounted && mounted(calendarRef.value as Calendar);
 
     calendar.on('clickDayName', (event) => {
@@ -54,23 +60,6 @@ onMounted(() => {
         }
     });
 
-    calendar.on('beforeUpdateEvent', function ({ event, changes }) {
-        const { id, calendarId } = event;
-
-        console.log(event);
-        console.log(changes);
-        calendar.updateEvent(id, calendarId, changes);
-    });
-
-    calendar.on('beforeCreateEvent', function (info) {
-        console.log('beforeCreateEvent', info);
-    });
-    calendar.on('beforeUpdateEvent', function (info) {
-        console.log('beforeUpdateEvent', info);
-    });
-    calendar.on('beforeDeleteEvent', function (info) {
-        console.log('beforeDeleteEvent', info);
-    });
     calendar.on('selectDateTime', function (info) {
         console.log('selectDateTime', info, calendar);
         save && save(info);
@@ -87,10 +76,6 @@ onMounted(() => {
         console.log("file.path", file.path);
 
     });
-
-    calendar.on('clickTimezonesCollapseBtn', function (info) {
-        console.log('clickTimezonesCollapseBtn', info);
-    });
 });
 
 onBeforeUnmount(() => {
@@ -99,7 +84,6 @@ onBeforeUnmount(() => {
 
 let lockMousemove = 0;
 const onMousemove = debounce<any, any>(function onMousemove(event: MouseEvent) {
-    console.log("event", event);
     let parentElement: HTMLElement | null = event.target as HTMLElement;
     let dataset: Record<"eventId" | "calendarId", string> = null as any;
     lockMousemove++;
@@ -115,17 +99,13 @@ const onMousemove = debounce<any, any>(function onMousemove(event: MouseEvent) {
         parentElement = parentElement.parentElement;
     }
 
-    if (!dataset) {
-        return;
-    }
+    if (!dataset) return;
 
     const info = calendarRef.value?.getEvent(dataset.eventId, dataset.calendarId) as CalendarEvent;
-    let linktext = info.raw.heading.content.replace(/^#* /, "#");
-    const { embeds } = info.raw.heading;
-    if (embeds && embeds.size > 0) {
-        const [first] = [...embeds];
-        linktext = first.link;
-    }
+    const { body, heading } = info.raw;
+    if (!body) return;
+
+    let linktext = heading.content.replace(/^#* /, "#");
     plugin.app.workspace.trigger("hover-link", {
         event,
         source: VIEW_TYPE_CALENDAR,

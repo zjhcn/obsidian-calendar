@@ -1,9 +1,14 @@
+import Calendar from "@toast-ui/calendar";
+import { unitOfTime } from "moment";
 import { Loc, parseYaml, SectionCache } from "obsidian";
 import { DEFAULT_CALENDARS_COLOR } from "src/default_options";
 import {
   CalendarSection,
   SectionCode,
   SectionComment,
+  SectionCommentData,
+  SectionCommentDataDuration,
+  SectionCommentType,
 } from "src/obsidian_vue.type";
 import { CalendarInfo } from "./calendarInfo";
 import { CalendarEvent, EventCategory } from "./event";
@@ -11,7 +16,11 @@ import { CalendarEvent, EventCategory } from "./event";
 const calendarHeadingLv = 1;
 const eventHeadingLv = 2;
 
-export function parseMDToEvents(content: string, sections: CalendarSection[]) {
+export function parseMDToEvents(
+  calendar: Calendar,
+  content: string,
+  sections: CalendarSection[]
+) {
   const calendarVisibleMap = new Map<string, boolean>();
   const calendars: (string | CalendarInfo)[] = [];
   const events: any[] = [];
@@ -58,12 +67,14 @@ export function parseMDToEvents(content: string, sections: CalendarSection[]) {
         // Event
         if (eventHeadingLv === heading.level) {
           activeEvent = new CalendarEvent(
+            calendar,
             title,
             activeCalendar,
             heading.category
           );
           activeEvent.addRaw("heading", section);
-          activeEvent.initDate(heading.start, heading.end);
+          activeEvent.start = heading.start;
+          activeEvent.end = heading.end;
           events.push(activeEvent);
           return;
         }
@@ -75,10 +86,43 @@ export function parseMDToEvents(content: string, sections: CalendarSection[]) {
         activeEvent?.addRaw("body", section);
         break; // break list
 
+      case "comment":
+        if (!section.data || !section.data.subject) {
+          return;
+        }
+
+        const comment = section.data as SectionComment;
+        if (comment.subject === "Event") {
+          processCommentEvent(comment.data);
+        }
+
+        break; // break comment
+
       default:
         break;
     }
   });
+
+  function processCommentEvent(data: SectionCommentData) {
+    if (!activeEvent) {
+      return;
+    }
+    if (data.start) {
+      activeEvent.start = data.start;
+    }
+    if (data.end) {
+      activeEvent.start = data.end;
+    }
+
+    if (data.duration) {
+      const duration = parseDuration(data.duration);
+      if (duration) {
+        activeEvent.end = moment(activeEvent.start as string)
+          .add(duration.amount, duration.unit)
+          .format("YYYY-MM-DD HH:mm:ss");
+      }
+    }
+  }
 
   return {
     events,
@@ -112,8 +156,8 @@ export function get(content: string, section: SectionCache) {
   );
 }
 
-const headingReg = /(#+) (([^~]{1}.*)|(~~.*~~))/;
-const headingTimeReg = /(#+) ([^\[]*)((\[(.*)~(.*)\])|(\[(.*)\]))(.*)/;
+const headingTimeReg =
+  /(#+) (([^~]{1}[^\[]*)|(~~[^\[]*~~)) ?((\[(.*)~(.*)\])|(\[(.*)\]))?(.*)/;
 function parseHeading(heading: string) {
   const ret = {
     level: 0,
@@ -132,8 +176,12 @@ function parseHeading(heading: string) {
       raw,
       // # or ## or ### or #### or ##### or ######
       level,
-      // heading text
+      // Title or ~~Title~~
+      titleMatches,
+      // Title or undefined (when has ~~~~)
       title,
+      // ~~Title~~ or undefined (when no ~~~~)
+      hideTitle,
       // [1970-01-01~1970-12-01] or [1970-01-01]
       time,
       // [1970-01-01~1970-12-01] or undefined (when match singleMatches)
@@ -150,31 +198,12 @@ function parseHeading(heading: string) {
       category,
     ] = hasTimeMatches;
     ret.level = level.length;
-    ret.title = title.trim();
+    ret.title = (title || hideTitle.replace(/~~/g, ""))?.trim();
+    ret.isVisible = !!title;
     ret.start = rangeStart?.trim() || singleStart?.trim();
     ret.end = rangeEnd?.trim();
     ret.category = (category?.trim() as EventCategory) || ret.category;
     return ret;
-  }
-
-  // CalendarInfo
-  const matches = headingReg.exec(heading);
-  if (!hasTimeMatches && matches) {
-    const [
-      // raw === heading
-      raw,
-      // # or ## or ### or #### or ##### or ######
-      level,
-      // Title or ~~Title~~
-      titleMatches,
-      // Title or undefined (when has ~~~~)
-      title,
-      // ~~Title~~ or undefined (when no ~~~~)
-      hideTitle,
-    ] = matches;
-    ret.level = level.length;
-    ret.title = (title || hideTitle.replace(/~~/g, ""))?.trim();
-    ret.isVisible = !!title;
   }
 
   return ret;
@@ -242,7 +271,7 @@ export function parseComment(comment: string): SectionComment {
 
   const ret = {
     raw,
-    subject,
+    subject: subject as SectionCommentType,
   };
 
   const codeParsed = parseCode(comment);
@@ -253,5 +282,27 @@ export function parseComment(comment: string): SectionComment {
   return {
     ...codeParsed,
     ...ret,
+  };
+}
+
+const durationReg = /^((\d+) ?(.*))$/;
+function parseDuration(duration: SectionCommentDataDuration) {
+  const matches = durationReg.exec(duration);
+  if (!matches) return null;
+
+  const [
+    // raw === duration
+    raw,
+    // origin === duration
+    origin,
+    // number
+    amount,
+    // years, y, quarters, Q, d, days, ...
+    unit = "d",
+  ] = matches;
+
+  return {
+    amount,
+    unit: unit as unitOfTime.Base,
   };
 }
