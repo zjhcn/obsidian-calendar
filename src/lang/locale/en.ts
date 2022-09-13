@@ -4,8 +4,15 @@ export default {
   ".": ".",
   ":": ":",
   Default: "Default",
+
+  // main.ts
+  "Open as Calendar": "Open as Calendar",
+
   // SettingManager.ts
   "Settings for Calendar plugin.": "Settings for Calendar plugin.",
+
+  // CalendarView.ts
+  "Open as Markdown": "Open as Markdown",
   // Options.ts
   "Type: boolean": "Type: boolean",
   "Type: expression": "Type: expression",

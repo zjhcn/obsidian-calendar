@@ -11,7 +11,7 @@ import { TitleNode } from "./toastui";
 import { callExpression, getEventFilterFn } from "src/utils";
 
 export interface FileItem {
-  options: CalendarOptions;
+  options: Partial<CalendarOptions>;
   calendar: Calendar;
 }
 
@@ -80,15 +80,12 @@ export const useSettingStore = defineStore("settings", {
       ret.theme = DEFAULT_THEME;
       ret.eventFilter = getEventFilterFn(this.settings.eventFilter);
 
-      return {
-        options: ret,
-        template,
-      };
+      return ret;
     },
     setCalendarInstance(
       view: View,
       calendar: Calendar,
-      options: CalendarOptions
+      options: Partial<CalendarOptions>
     ) {
       this.viewMap.set(view, {
         calendar,
