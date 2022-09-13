@@ -120,9 +120,7 @@ const onMousemove = debounce<any, any>(function onMousemove(event: MouseEvent) {
     }
 
     const info = calendarRef.value?.getEvent(dataset.eventId, dataset.calendarId) as CalendarEvent;
-    console.log("info", info);
     let linktext = info.raw.heading.content.replace(/^#* /, "#");
-    console.log("info", info);
     const { embeds } = info.raw.heading;
     if (embeds && embeds.size > 0) {
         const [first] = [...embeds];

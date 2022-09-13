@@ -12,7 +12,6 @@ const calendarHeadingLv = 1;
 const eventHeadingLv = 2;
 
 export function parseMDToEvents(content: string, sections: CalendarSection[]) {
-  console.log("sections", sections);
   const calendarVisibleMap = new Map<string, boolean>();
   const calendars: (string | CalendarInfo)[] = [];
   const events: any[] = [];

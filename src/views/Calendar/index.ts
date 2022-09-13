@@ -21,8 +21,6 @@ import CalendarPlugin from "src/main";
 import { CalendarData } from "./data";
 
 export const VIEW_TYPE_CALENDAR = "calendar-view";
-console.log("getLinkpath", getLinkpath);
-console.log("parseLinktext", parseLinktext);
 
 export class CalendarView extends TextFileView {
   calendarData: CalendarData;
@@ -46,7 +44,6 @@ export class CalendarView extends TextFileView {
   // If clear is set, then it means we're opening a completely different file.
   async setViewData(data: string, clear: boolean) {
     app.workspace.onLayoutReady(async () => {
-      console.log("onLayoutReady");
       this.compatibilityMode = extensions.includes(this.file.extension);
     });
     this.calendarData.loadData(data, this.file);
@@ -100,6 +97,7 @@ export class CalendarView extends TextFileView {
     this.calendar.setOptions(options);
     this.calendar.setTheme(options.theme);
     this.calendar.setCalendars(options.calendars as CalendarInfo[]);
+    options.defaultView && this.calendar.changeView(options.defaultView);
     this.calendar.createEvents(formatEvents(this.calendarData.events));
   }
 
