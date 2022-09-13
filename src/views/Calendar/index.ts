@@ -1,4 +1,12 @@
-import { Menu, TextFileView, WorkspaceLeaf, View, TFile } from "obsidian";
+import {
+  Menu,
+  TextFileView,
+  WorkspaceLeaf,
+  View,
+  TFile,
+  getLinkpath,
+  parseLinktext,
+} from "obsidian";
 import Calendar from "@toast-ui/calendar";
 import "@toast-ui/calendar/dist/toastui-calendar.min.css";
 import { createApp, App } from "vue";
@@ -6,15 +14,15 @@ import CalendarComp from "../../vue/components/Calendar/index.vue";
 import { registerDirectives } from "src/vue/directives";
 import { pinia, useSettingStore } from "src/vue/store";
 import { formatEvents } from "src/utils";
-import { data } from "src/vue/components/Calendar/data";
 import { CalendarInfo } from "src/default_options";
-import { CalendarOptions } from "src/obsidian_vue.type";
 import { extensions } from "src/default_settings";
 import { t } from "src/lang/helpers";
 import CalendarPlugin from "src/main";
 import { CalendarData } from "./data";
 
 export const VIEW_TYPE_CALENDAR = "calendar-view";
+console.log("getLinkpath", getLinkpath);
+console.log("parseLinktext", parseLinktext);
 
 export class CalendarView extends TextFileView {
   calendarData: CalendarData;
@@ -36,15 +44,11 @@ export class CalendarView extends TextFileView {
   }
 
   // If clear is set, then it means we're opening a completely different file.
-  setViewData(data: string, clear: boolean) {
+  async setViewData(data: string, clear: boolean) {
     app.workspace.onLayoutReady(async () => {
+      console.log("onLayoutReady");
       this.compatibilityMode = extensions.includes(this.file.extension);
     });
-    let parseData = {} as CalendarOptions;
-    try {
-    } catch (error) {
-      console.error(error);
-    }
     this.calendarData.loadData(data, this.file);
     this.init();
   }
@@ -59,10 +63,12 @@ export class CalendarView extends TextFileView {
       return;
     }
     this.vCalendar = createApp(CalendarComp, {
+      plugin: this.plugin,
+      file: this.file,
       leaf: this.leaf,
       save: (payload: any) => {
-        this.data = JSON.stringify(payload);
-        this.requestSave();
+        // this.data = JSON.stringify(payload);
+        // this.requestSave();
       },
       mounted: (calendar: Calendar) => {
         this.calendar = calendar;
@@ -85,15 +91,16 @@ export class CalendarView extends TextFileView {
       return;
     }
     const settingStore = useSettingStore();
-    const options = settingStore.getOptions({});
+    const options = settingStore.getOptions({
+      calendars: this.calendarData.calendars,
+    });
     settingStore.setCalendarInstance(this.leaf.view, this.calendar, {});
 
     this.calendar.clear();
     this.calendar.setOptions(options);
     this.calendar.setTheme(options.theme);
     this.calendar.setCalendars(options.calendars as CalendarInfo[]);
-    this.calendar.createEvents(formatEvents(data));
-    console.log(this.calendar);
+    this.calendar.createEvents(formatEvents(this.calendarData.events));
   }
 
   clear() {}

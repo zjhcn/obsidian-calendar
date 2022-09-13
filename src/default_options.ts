@@ -190,15 +190,12 @@ export type CalendarInfo = {
   dragBackgroundColor?: string;
   borderColor?: string;
 };
-export const DEFAULT_CALENDARS: CalendarInfo[] = [
-  {
-    id: "cal1",
-    name: "Personal",
-    backgroundColor: "#03bd9e",
-  },
-  {
-    id: "cal2",
-    name: "Work",
-    backgroundColor: "#00a9ff",
-  },
+
+export const getCalendarName = (i: number) => `${t("Calendar")}${i}`;
+export const DEFAULT_CALENDARS_COLOR: string[] = [
+  "#00a9ff",
+  "#03bd9e",
+  "#bbdc00",
+  "#db473f",
+  "#9e5fff",
 ];

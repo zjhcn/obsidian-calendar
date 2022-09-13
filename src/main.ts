@@ -28,9 +28,15 @@ import { CalendarView, VIEW_TYPE_CALENDAR } from "./views/Calendar";
 import "./style/styles.scss";
 import { toRaw } from "vue";
 import { t } from "./lang/helpers";
+import {
+  hoverEvent,
+  initializeMarkdownPostProcessor,
+  markdownPostProcessor,
+} from "./MarkdownPostProcessor";
 
 export default class Calendar extends Plugin implements ISetting {
   settingsTab!: ObVueSettingsTab;
+  hover: any = {};
   settingsStore!: ReturnType<typeof useSettingStore>;
   public calendarFileModes: { [file: string]: string } = {};
   dummyVueApp!: App;
@@ -71,11 +77,29 @@ export default class Calendar extends Plugin implements ISetting {
     registerCommand(this);
     this.switchToCalendarAfterLoad();
     this.registerMonkeyPatches();
+    this.addMarkdownPostProcessor();
 
     this.addSettingTab(this.settingsTab);
   }
 
   onunload() {}
+
+  private addMarkdownPostProcessor() {
+    initializeMarkdownPostProcessor(this);
+    this.registerMarkdownPostProcessor(markdownPostProcessor);
+
+    // internal-link quick preview
+    this.registerEvent(
+      this.app.workspace.on("quick-preview", (file: TFile, data: string) => {
+        console.log(file);
+        console.log("data", data);
+      })
+    );
+
+    //monitoring for div.popover.hover-popover.file-embed.is-loaded to be added to the DOM tree
+    // this.observer = observer;
+    // this.observer.observe(document, { childList: true, subtree: true });
+  }
 
   private switchToCalendarAfterLoad() {
     this.app.workspace.onLayoutReady(() => {

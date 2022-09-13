@@ -4,6 +4,7 @@ export default {
   ".": ".",
   ":": ":",
   Default: "Default",
+  Calendar: "Calendar",
 
   // main.ts
   "Open as Calendar": "Open as Calendar",

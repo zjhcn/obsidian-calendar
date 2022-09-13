@@ -1,14 +1,14 @@
 import { Options } from "@toast-ui/calendar";
 import { defineStore } from "pinia";
 import Calendar from "@toast-ui/calendar";
-import { DEFAULT_THEME } from "src/default_options";
-import { OptionsModal } from "../../modal/OptionsModal";
+import { DEFAULT_THEME, getCalendarName } from "src/default_options";
 import { toRaw } from "vue";
 import { CalendarOptions, ObVueSettings } from "../../obsidian_vue.type";
 import { useObsidianStore } from ".";
 import { View } from "obsidian";
 import { TitleNode } from "./toastui";
-import { callExpression, getEventFilterFn } from "src/utils";
+import { getEventFilterFn } from "src/utils";
+import { getCalendars } from "src/views/Calendar/utils";
 
 export interface FileItem {
   options: Partial<CalendarOptions>;
@@ -32,6 +32,9 @@ export const useSettingStore = defineStore("settings", {
       return {
         view: this.defaultSetting.options.defaultView,
         ...this.defaultSetting,
+        calendars: this.defaultSetting.calendars.map((s, i) =>
+          getCalendarName(i)
+        ),
       };
     },
   },
@@ -73,7 +76,7 @@ export const useSettingStore = defineStore("settings", {
         toRaw(this.settings.options),
         options.options
       ) as Options;
-      ret.calendars = toRaw(
+      ret.calendars = getCalendars(
         options.calendars ? options.calendars : this.settings.calendars
       );
       ret.template = templateFn;
@@ -94,7 +97,6 @@ export const useSettingStore = defineStore("settings", {
     }, // end setCalendarInstance
 
     rerender({ options, view }: CalendarOptions) {
-      console.log("options", options, this.viewMap);
       this.viewMap.forEach((item) => {
         if (options) {
           item.calendar.setOptions(options);
