@@ -3,10 +3,16 @@ import { useSettingStore } from "src/vue/store";
 import { computed, ref, Ref, watch } from "vue";
 import diff from "microdiff";
 import { CalendarInfo } from "src/default_options";
+import { CalendarMapOptions } from "src/vue/store/settings";
 
-export function useCalendars(calendar: Ref<Calendar>) {
+export function useCalendars(calendar: Ref<Calendar | null>) {
   const store = useSettingStore();
-  const options = computed(() => store.getOptionsByInstance(calendar.value));
+  const options = computed(() => {
+    if (!calendar.value) {
+      return {} as Required<CalendarMapOptions>;
+    }
+    return store.getOptionsByInstance(calendar.value);
+  });
   const calendars = ref<CalendarInfo[] | null>(null);
   watch(
     options,
@@ -91,7 +97,7 @@ export function useCalendars(calendar: Ref<Calendar>) {
       const [i, key] = change.path;
       const calendarInfo = newObj[i as number];
       if (key === "isVisible") {
-        calendar.value.setCalendarVisibility(
+        calendar.value!.setCalendarVisibility(
           calendarInfo.id,
           !!calendarInfo.isVisible
         );

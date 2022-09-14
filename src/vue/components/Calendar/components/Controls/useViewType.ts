@@ -3,7 +3,7 @@ import { t } from "src/lang/helpers";
 import { CalendarViewType } from "src/obsidian_vue.type";
 import { effect, Ref, ref, watch } from "vue";
 
-export function useViewType(calendar: Ref<Calendar>) {
+export function useViewType(calendar: Ref<Calendar | null>) {
   const options = [
     {
       value: "month",
@@ -22,7 +22,7 @@ export function useViewType(calendar: Ref<Calendar>) {
   const viewType = ref<CalendarViewType>("week");
 
   watch(viewType, (viewName) => {
-    calendar.value.changeView(viewName);
+    calendar.value!.changeView(viewName);
   });
 
   return {

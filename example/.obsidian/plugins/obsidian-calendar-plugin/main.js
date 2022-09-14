@@ -1,0 +1,1 @@
+D:/projects/github/obsidian-calendar/main.js

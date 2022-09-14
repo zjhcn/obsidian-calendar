@@ -7,14 +7,14 @@
 
             <div class="calendar-ctrls-color-popup">
                 <div class="calendar-ctrls-color">
-                    <label>
+                    <label class="calendar-ctrls-checkbox">
                         <input type="checkbox" :indeterminate="isIndeterminate" v-model="isSelectAll" />
                         <span>{{t("Select All")}}</span>
                     </label>
                 </div>
                 <template v-if="calendars">
                     <div class="calendar-ctrls-color" v-for="c in calendars" :key="c.id">
-                        <label>
+                        <label class="calendar-ctrls-checkbox">
                             <input type="checkbox" :checked="c.isVisible" @change="onChange(c)" />
                             <span>{{c.name}}</span>
                         </label>
@@ -24,16 +24,18 @@
             </div>
         </details>
         <div class="calendar-ctrls-right">
-            <span class="calendar-ctrls-item">{{renderRange}}</span>
+            <span class="calendar-ctrls-item calendar-ctrls-range">{{renderRange}}</span>
             <details class="calendar-ctrls-details" open>
                 <summary class="calendar-ctrls-summary">
                     <i class="calendar-ctrls-summary-open" v-icon="'gear'"></i>
                 </summary>
 
-                <Dropdown class="calendar-ctrls-item" v-model="viewType" :options="viewsOptions" />
-                <button class="calendar-ctrls-item" @click="onToday">{{t("Today")}}</button>
-                <button class="calendar-ctrls-item" v-icon="'left-arrow'" @click="onPrev"></button>
-                <button class="calendar-ctrls-item" v-icon="'right-arrow'" @click="onNext"></button>
+                <div class="calendar-ctrls-btn">
+                    <Dropdown class="calendar-ctrls-item" v-model="viewType" :options="viewsOptions" />
+                    <button class="calendar-ctrls-item" @click="onToday">{{t("Today")}}</button>
+                    <button class="calendar-ctrls-item" v-icon="'left-arrow'" @click="onPrev"></button>
+                    <button class="calendar-ctrls-item" v-icon="'right-arrow'" @click="onNext"></button>
+                </div>
             </details>
         </div>
     </div>
@@ -61,7 +63,7 @@ onClickOutside(colorPopupDetailsRef, () => {
 
 const props = defineProps({
     calendar: {
-        type: Object as PropType<Calendar>,
+        type: Object as PropType<Calendar | null>,
         required: true,
     },
 });
@@ -89,15 +91,15 @@ const renderRange = computed(() => {
 });
 
 function onToday() {
-    calendar.value.today();
+    calendar.value!.today();
 }
 
 function onPrev() {
-    calendar.value.prev();
+    calendar.value!.prev();
 }
 
 function onNext() {
-    calendar.value.next();
+    calendar.value!.next();
 }
 
 </script>
@@ -131,6 +133,7 @@ function onNext() {
 
         .calendar-ctrls-summary-open,
         .calendar-ctrls-summary-icon {
+            font-size: 0;
             display: inline-block;
             border-radius: var(--radius-s);
             height: var(--input-height);
@@ -157,29 +160,32 @@ function onNext() {
     .calendar-ctrls-right {
         display: flex;
         height: var(--input-height);
-        line-height: var(--input-height);
 
         .calendar-ctrls-details {
             padding-left: 45px;
             padding-top: 0;
         }
+
+
+    }
+
+    .calendar-ctrls-range {
+        line-height: var(--input-height);
     }
 
     .calendar-ctrls-color {
         white-space: nowrap;
+        display: flex;
+        justify-content: space-between;
 
-        label {
+        .calendar-ctrls-checkbox {
             display: inline-block;
             height: var(--input-height);
             line-height: var(--input-height);
-        }
 
-        label:nth-child(1) {
-            padding-right: 8px;
-        }
-
-        input {
-            vertical-align: middle;
+            &:nth-child(1) {
+                padding-right: 8px;
+            }
         }
     }
 

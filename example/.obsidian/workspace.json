@@ -1,0 +1,154 @@
+{
+  "main": {
+    "id": "fa35fa9e2801ed9f",
+    "type": "split",
+    "children": [
+      {
+        "id": "331519f588257c37",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5f74285a03eb4375",
+            "type": "leaf",
+            "state": {
+              "type": "calendar-view",
+              "state": {
+                "file": "Calendar.md"
+              }
+            }
+          },
+          {
+            "id": "b3f942da147e0170",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "TODO/Calendar Plugin TodoList.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f285e1c05c537910",
+    "type": "split",
+    "children": [
+      {
+        "id": "d7d89c1192074473",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c01c5315124f3aff",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "a335d2b23f649dec",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b932780edde7b158",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "0c89630b119f3853",
+    "type": "split",
+    "children": [
+      {
+        "id": "ab2fc96b51e182aa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5ee6424542c80f62",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Calendar.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "d399e1d2f84a152c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Calendar.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "a71688e9c70ff2c6",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "58917475cf8a10ab",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Calendar.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "active": "5f74285a03eb4375",
+  "lastOpenFiles": [
+    "TODO/Calendar Plugin TodoList.md",
+    "Calendar.md",
+    "MOC-Home.md",
+    "Obsidian Calendar.md"
+  ]
+}
