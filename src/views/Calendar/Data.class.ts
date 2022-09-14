@@ -1,4 +1,4 @@
-import Calendar, { EventObject } from "@toast-ui/calendar";
+import Calendar, { EventObject, Options } from "@toast-ui/calendar";
 import {
   App,
   CachedMetadata,
@@ -10,17 +10,23 @@ import {
 } from "obsidian";
 import CalendarPlugin from "src/main";
 import {
+  CalendarOptions,
   CalendarReferenceCache,
   CalendarSection,
+  CalendarViewType,
   SectionCacheType,
 } from "src/obsidian_vue.type";
-import { CalendarInfo } from "./calendarInfo";
+import { CalendarInfo } from "./CalendarInfo.class";
 import { parseCode, parseComment, parseMDToEvents } from "./utils";
 import { get } from "./utils";
 
-export class CalendarData {
+export class CalendarData implements Partial<CalendarOptions> {
+  view?: CalendarViewType;
+  options?: Options;
+  eventFilter?: string;
+  template?: Record<string, string>;
   events: EventObject[] = [];
-  calendars: string[] | CalendarInfo[] = [];
+  calendars: CalendarInfo[] = [];
   constructor(public plugin: CalendarPlugin, public app: App = plugin.app) {}
 
   async loadData(calendar: Calendar, data: string, file: TFile) {

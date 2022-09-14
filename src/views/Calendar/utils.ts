@@ -10,8 +10,9 @@ import {
   SectionCommentDataDuration,
   SectionCommentType,
 } from "src/obsidian_vue.type";
-import { CalendarInfo } from "./calendarInfo";
-import { CalendarEvent, EventCategory } from "./event";
+import { useSettingStore } from "src/vue/store";
+import { CalendarInfo } from "./CalendarInfo.class";
+import { CalendarEvent, EventCategory } from "./Event.class";
 
 const calendarHeadingLv = 1;
 const eventHeadingLv = 2;
@@ -23,109 +24,131 @@ export function parseMDToEvents(
 ) {
   const calendarVisibleMap = new Map<string, boolean>();
   const calendars: (string | CalendarInfo)[] = [];
-  const events: any[] = [];
   let activeCalendar = "";
   let activeEvent: CalendarEvent | null = null;
+  const store = useSettingStore();
+  const options = store.getOptionsByInstance(calendar);
 
-  sections.forEach((section) => {
-    let sectionContent = get(content, section);
-    switch (section.type) {
-      case "yaml":
-        break; // break yaml
+  function processSections() {
+    const events: CalendarEvent[] = [];
+    sections.forEach((section) => {
+      let sectionContent = get(content, section);
+      switch (section.type) {
+        case "yaml":
+          break; // break yaml
 
-      case "heading":
-        section.links?.forEach((link) => {
-          if (!link.displayText) {
+        case "heading":
+          section.links?.forEach((link) => {
+            if (!link.displayText) {
+              return;
+            }
+            sectionContent = sectionContent.replace(
+              link.original,
+              link.displayText
+            );
+          });
+          section.embeds?.forEach((link) => {
+            if (!link.displayText) {
+              return;
+            }
+            sectionContent = sectionContent.replace(
+              link.original,
+              link.displayText
+            );
+          });
+          const heading = parseHeading(sectionContent);
+          const title = heading.title;
+
+          // Calendar
+          if (calendarHeadingLv === heading.level) {
+            activeEvent = null;
+            activeCalendar = title;
+            calendarVisibleMap.set(activeCalendar, heading.isVisible);
+            calendars.push(title);
             return;
           }
-          sectionContent = sectionContent.replace(
-            link.original,
-            link.displayText
-          );
-        });
-        section.embeds?.forEach((link) => {
-          if (!link.displayText) {
+
+          // Event
+          if (eventHeadingLv === heading.level) {
+            activeEvent = new CalendarEvent(
+              calendar,
+              title,
+              activeCalendar,
+              heading.category
+            );
+            activeEvent.addRaw("heading", section);
+            activeEvent.start = heading.start;
+            activeEvent.end = heading.end;
+            events.push(activeEvent);
             return;
           }
-          sectionContent = sectionContent.replace(
-            link.original,
-            link.displayText
-          );
-        });
-        const heading = parseHeading(sectionContent);
-        const title = heading.title;
+          break; // break heading
 
-        // Calendar
-        if (calendarHeadingLv === heading.level) {
-          activeEvent = null;
-          activeCalendar = title;
-          calendarVisibleMap.set(activeCalendar, heading.isVisible);
-          calendars.push(title);
-          return;
-        }
+        case "list":
+        case "code":
+        case "paragraph":
+          activeEvent?.addRaw("body", section);
+          break; // break list
 
-        // Event
-        if (eventHeadingLv === heading.level) {
-          activeEvent = new CalendarEvent(
-            calendar,
-            title,
-            activeCalendar,
-            heading.category
-          );
-          activeEvent.addRaw("heading", section);
-          activeEvent.start = heading.start;
-          activeEvent.end = heading.end;
-          events.push(activeEvent);
-          return;
-        }
-        break; // break heading
+        case "comment":
+          if (!section.data || !section.data.subject) {
+            return;
+          }
 
-      case "list":
-      case "code":
-      case "paragraph":
-        activeEvent?.addRaw("body", section);
-        break; // break list
+          const comment = section.data as SectionComment;
+          if (comment.subject === "Event") {
+            processCommentEvent(comment.data);
+          }
 
-      case "comment":
-        if (!section.data || !section.data.subject) {
-          return;
-        }
+          break; // break comment
 
-        const comment = section.data as SectionComment;
-        if (comment.subject === "Event") {
-          processCommentEvent(comment.data);
-        }
+        default:
+          break;
+      }
+    });
 
-        break; // break comment
-
-      default:
-        break;
-    }
-  });
+    return events;
+  }
 
   function processCommentEvent(data: SectionCommentData) {
     if (!activeEvent) {
       return;
     }
     if (data.start) {
-      activeEvent.start = data.start;
+      activeEvent.setStart(data.start);
     }
     if (data.end) {
-      activeEvent.start = data.end;
+      activeEvent.setEnd(data.end);
     }
 
     if (data.duration) {
       const duration = parseDuration(data.duration);
       if (duration) {
-        activeEvent.end = moment(activeEvent.start as string)
-          .add(duration.amount, duration.unit)
-          .format("YYYY-MM-DD HH:mm:ss");
+        activeEvent.addEnd(duration.amount, duration.unit);
       }
     }
+    activeEvent.repeat = data.repeat;
   }
 
+  const events = processSections();
+  const repeatEvents = [...events];
+  events.forEach((event) => {
+    if (!event.repeat) {
+      return;
+    }
+
+    const times =
+      typeof event.repeat === "boolean" ? options.repeatTimes : event.repeat;
+    for (let i = 0; i < times; i++) {
+      const cloneEvent = event.clone();
+      cloneEvent.addStart(i + 1, "d");
+      cloneEvent.addEnd(i + 1, "d");
+      repeatEvents.push(cloneEvent);
+    }
+  });
+
   return {
-    events,
+    events: repeatEvents,
     calendars: getCalendars(calendars).map((c) => {
       c.isVisible = calendarVisibleMap.get(c.id);
       return c;
@@ -302,7 +325,7 @@ function parseDuration(duration: SectionCommentDataDuration) {
   ] = matches;
 
   return {
-    amount,
+    amount: Number(amount),
     unit: unit as unitOfTime.Base,
   };
 }

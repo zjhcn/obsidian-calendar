@@ -1,4 +1,4 @@
-import { ThemeInfo } from "./theme";
+import { ThemeInfo } from "./Theme.class";
 
 export class CalendarInfo extends ThemeInfo {
   /**

@@ -190,6 +190,7 @@ export const DEFAULT_THEME = {
 export type CalendarInfo = {
   id: string;
   name: string;
+  isVisible?: boolean;
   color?: string;
   backgroundColor?: string;
   dragBackgroundColor?: string;

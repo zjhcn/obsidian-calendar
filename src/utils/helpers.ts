@@ -1,3 +1,5 @@
+import { TZDate } from "@toast-ui/calendar/*";
+
 export function deepClone(obj: any) {
   if (obj === null) return null;
   let clone = Object.assign({}, obj);
@@ -66,4 +68,8 @@ export function abstractEqual(source: any, other: any) {
     default:
       return String(source) === String(other);
   }
+}
+
+export function tzFormat(date: TZDate, format: string) {
+  return moment(date.toDate()).format(format);
 }

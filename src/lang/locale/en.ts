@@ -129,4 +129,11 @@ export default {
   Task: "Task",
   "All Day": "All Day",
   "HH:mm": "HH:mm",
+
+  // Controls/index.vue
+  Monthly: "Monthly",
+  Weekly: "Weekly",
+  Daily: "Daily",
+  Today: "Today",
+  "Select All": "Select All",
 };

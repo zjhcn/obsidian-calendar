@@ -25,6 +25,7 @@ export const FRONTMATTER_KEY = "calendar-plugin";
 export const extensions = ["calendar"];
 
 export const DEFAULT_SETTINGS: ObVueSettings = {
+  repeatTimes: 31,
   extensions,
   options: DEFAULT_OPTIONS as any,
   template: DEFAULT_TEMPLATE,

@@ -19,7 +19,7 @@ import { CalendarOptions } from "src/obsidian_vue.type";
 
 export function uiOptionsCommon(
   el: HTMLElement,
-  settings: CalendarOptions,
+  settings: Required<CalendarOptions>,
   save: Function
 ) {
   const { content } = createDetails(el, t("Common"));
@@ -99,7 +99,7 @@ export function uiOptionsCommon(
 
 export function uiOptionsWeek(
   el: HTMLElement,
-  settings: CalendarOptions,
+  settings: Required<CalendarOptions>,
   save: Function
 ) {
   const { content } = createDetails(el, "Week");
@@ -303,7 +303,7 @@ export function uiOptionsWeek(
 
 export function uiOptionsMonth(
   el: HTMLElement,
-  settings: CalendarOptions,
+  settings: Required<CalendarOptions>,
   save: Function
 ) {
   const { content } = createDetails(el, "Month");
@@ -467,7 +467,7 @@ export function uiOptionsMonth(
 
 export function uiOptionsTemplate(
   el: HTMLElement,
-  settings: CalendarOptions,
+  settings: Required<CalendarOptions>,
   save: Function
 ) {
   const { content } = createDetails(el, t("Template"));

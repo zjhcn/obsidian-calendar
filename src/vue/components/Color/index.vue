@@ -1,5 +1,5 @@
 <template>
-    <span ref="container"> </span>
+    <label ref="container"> </label>
 </template>
 
 <script setup lang="ts">

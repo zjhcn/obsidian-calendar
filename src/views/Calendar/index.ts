@@ -17,7 +17,7 @@ import { CalendarInfo } from "src/default_options";
 import { extensions } from "src/default_settings";
 import { t } from "src/lang/helpers";
 import CalendarPlugin from "src/main";
-import { CalendarData } from "./data";
+import { CalendarData } from "./Data.class";
 
 export const VIEW_TYPE_CALENDAR = "calendar-view";
 
@@ -44,8 +44,8 @@ export class CalendarView extends TextFileView {
   async setViewData(data: string, clear: boolean) {
     app.workspace.onLayoutReady(async () => {
       this.compatibilityMode = extensions.includes(this.file.extension);
+      this.init();
     });
-    this.init();
   }
 
   async save(clear?: boolean) {
@@ -79,7 +79,6 @@ export class CalendarView extends TextFileView {
   }
 
   mounted(calendar: Calendar) {
-    console.log("calendar", calendar);
     this.calendar = calendar;
     this.calendarData.loadData(calendar, this.data, this.file);
     this.renderCalendar();
@@ -93,7 +92,12 @@ export class CalendarView extends TextFileView {
     const options = settingStore.getOptions({
       calendars: this.calendarData.calendars,
     });
-    settingStore.setCalendarInstance(this.leaf.view, this.calendar, {});
+    settingStore.setCalendarInstance(this.calendar, {
+      options,
+      calendars: this.calendarData.calendars,
+      template: this.calendarData.template,
+      eventFilter: this.calendarData.eventFilter,
+    });
 
     this.calendar.clear();
     this.calendar.setOptions(options);

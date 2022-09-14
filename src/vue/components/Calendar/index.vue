@@ -1,4 +1,5 @@
 <template>
+    <Controls :calendar="calendarRef" />
     <div class="calendar-container" @mousemove.ctrl="onMousemove" ref="container">
     </div>
 </template>
@@ -10,11 +11,12 @@ import { debounce, Plugin, TFile } from "obsidian";
 import { WorkspaceLeaf } from "obsidian";
 import { Theme } from "src/default_options";
 import { VIEW_TYPE_CALENDAR } from "src/views/Calendar";
-import { CalendarEvent } from "src/views/Calendar/event";
+import { CalendarEvent } from "src/views/Calendar/Event.class";
 import { useSettingStore } from "src/vue/store";
 import { onBeforeUnmount } from "vue";
 import { onMounted, ref } from "vue";
 import { PropType } from "vue-demi";
+import Controls from "./components/Controls/index.vue";
 
 const { plugin, leaf, mounted, options, file, save } = defineProps({
     plugin: {
@@ -119,6 +121,6 @@ const onMousemove = debounce<any, any>(function onMousemove(event: MouseEvent) {
 
 <style lang="scss">
 .calendar-container {
-    height: 100%;
+    height: calc(100% - 30px);
 }
 </style>

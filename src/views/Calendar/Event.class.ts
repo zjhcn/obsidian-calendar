@@ -1,4 +1,5 @@
 import Calendar, { TZDate } from "@toast-ui/calendar";
+import { unitOfTime } from "moment";
 import { CalendarSection } from "src/obsidian_vue.type";
 
 export declare type DateType = Date | string | number | TZDate;
@@ -21,19 +22,19 @@ export class CalendarEvent {
   /**
    * Calendar ID
    */
-  calendarId?: string;
+  calendarId: string;
   /**
    * Title for the event
    */
-  title?: string;
+  title: string;
   /**
    * When the event starts
    */
-  start?: DateType;
+  start?: TZDate;
   /**
    * When the event ends
    */
-  end?: DateType;
+  end?: TZDate;
   /**
    * Location of the event
    */
@@ -45,7 +46,7 @@ export class CalendarEvent {
   /**
    * Category of the event (milestone, task, allday, time)
    */
-  category?: EventCategory;
+  category: EventCategory;
   /**
    * State of the event. The default is 'Busy'
    */
@@ -82,6 +83,10 @@ export class CalendarEvent {
     body: CalendarSection[];
     comment: CalendarSection[];
   };
+  /**
+   * Repeat Event
+   */
+  repeat?: boolean | number;
 
   constructor(
     calendar: Calendar,
@@ -134,6 +139,28 @@ export class CalendarEvent {
     return this.raw.body.map((c) => c.content).join("\n");
   }
 
+  setStart(start: DateType) {
+    this.start = new TZDate(start);
+  }
+
+  setEnd(end: DateType) {
+    this.end = new TZDate(end);
+  }
+
+  addStart(amount: number, unit: unitOfTime.Base) {
+    if (!this.start) {
+      this.start = new TZDate();
+    }
+    this.start = this.addDate(this.start, amount, unit);
+  }
+
+  addEnd(amount: number, unit: unitOfTime.Base) {
+    if (!this.end) {
+      this.end = new TZDate(this.start);
+    }
+    this.end = this.addDate(this.end, amount, unit);
+  }
+
   addRaw(type: "heading" | "body" | "comment", section: CalendarSection) {
     const { raw } = this;
 
@@ -148,4 +175,66 @@ export class CalendarEvent {
     }
     raw[type].push(section);
   }
+
+  clone() {
+    const event = new CalendarEvent(
+      this.calendar,
+      this.title,
+      this.calendarId,
+      this.category
+    );
+    Object.assign(event, this);
+    Object.assign(event.raw, this.raw);
+    return event;
+  }
+
+  addDate(date: TZDate, amount: number, unit: unitOfTime.Base) {
+    const tzDate = new TZDate(date);
+    switch (unit) {
+      case "years":
+      case "y":
+        tzDate.addFullYear(amount);
+        break;
+
+      case "months":
+      case "M":
+        tzDate.addMonth(amount);
+        break;
+
+      case "weeks":
+      case "w":
+        tzDate.addDate(7 * amount);
+        break;
+
+      case "days":
+      case "d":
+        tzDate.addDate(amount);
+        break;
+
+      case "hours":
+      case "h":
+        tzDate.addHours(amount);
+        break;
+
+      case "minutes":
+      case "m":
+        tzDate.addMinutes(amount);
+        break;
+
+      case "seconds":
+      case "s":
+        tzDate.addSeconds(amount);
+        break;
+
+      case "milliseconds":
+      case "ms":
+        tzDate.addMilliseconds(amount);
+        break;
+
+      default:
+        break;
+    } // end switch
+
+    return tzDate;
+  } // end addDate
 }

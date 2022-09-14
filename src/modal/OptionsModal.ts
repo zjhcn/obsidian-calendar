@@ -47,7 +47,6 @@ export class OptionsModal extends Modal {
       return;
     }
     const settings: CalendarOptions = {
-      view: null as any,
       options: null as any,
       template: null as any,
       eventFilter: null as any,

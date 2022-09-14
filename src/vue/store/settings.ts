@@ -2,6 +2,7 @@ import { Options } from "@toast-ui/calendar";
 import { defineStore } from "pinia";
 import Calendar from "@toast-ui/calendar";
 import {
+  CalendarInfo,
   DEFAULT_THEME,
   DEFAULT_TIME_ZONE,
   getCalendarName,
@@ -19,22 +20,25 @@ export interface FileItem {
   calendar: Calendar;
 }
 
+export interface CalendarMapOptions extends Omit<CalendarOptions, "calendars"> {
+  calendars?: CalendarInfo[] | null;
+}
+
 export type SettingState = {
   defaultSetting: ObVueSettings;
-  viewMap: Map<View, FileItem>;
+  calendarMap: Map<Calendar, CalendarMapOptions>;
 };
 
 export const useSettingStore = defineStore("settings", {
   state: () =>
     ({
       defaultSetting: null as any,
-      viewMap: new Map<View, FileItem>(),
+      calendarMap: new Map<Calendar, CalendarOptions>(),
     } as SettingState),
 
   getters: {
-    settings(): CalendarOptions {
+    settings(): Required<CalendarOptions> {
       return {
-        view: this.defaultSetting.options.defaultView,
         ...this.defaultSetting,
         calendars: this.defaultSetting.calendars.map((s, i) =>
           getCalendarName(i)
@@ -51,6 +55,18 @@ export const useSettingStore = defineStore("settings", {
       options: Partial<CalendarOptions> = {} as any
     ): typeof DEFAULT_TIME_ZONE {
       return DEFAULT_TIME_ZONE;
+    },
+    getOptionsByInstance(calendar: Calendar): Required<CalendarMapOptions> {
+      if (!this.calendarMap.has(calendar)) {
+        return {
+          ...this.defaultSetting,
+          calendars: null,
+        };
+      }
+      return {
+        ...this.defaultSetting,
+        ...this.calendarMap.get(calendar),
+      } as Required<CalendarMapOptions>;
     },
     getOptions(options: Partial<CalendarOptions> = {} as any) {
       const template = Object.assign(
@@ -95,25 +111,14 @@ export const useSettingStore = defineStore("settings", {
 
       return ret;
     },
-    setCalendarInstance(
-      view: View,
-      calendar: Calendar,
-      options: Partial<CalendarOptions>
-    ) {
-      this.viewMap.set(view, {
-        calendar,
-        options,
-      });
+    setCalendarInstance(calendar: Calendar, options: CalendarMapOptions) {
+      this.calendarMap.set(calendar, options);
     }, // end setCalendarInstance
 
-    rerender({ options, view }: CalendarOptions) {
-      this.viewMap.forEach((item) => {
+    rerender({ options }: CalendarOptions) {
+      this.calendarMap.forEach((item, calendar) => {
         if (options) {
-          item.calendar.setOptions(options);
-        }
-
-        if (view) {
-          item.calendar.changeView(view);
+          calendar.setOptions(options);
         }
       });
     },

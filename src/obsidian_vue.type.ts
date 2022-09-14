@@ -2,17 +2,22 @@ import { Options } from "@toast-ui/calendar";
 import { duration, Moment, unitOfTime } from "moment";
 import { Plugin, Pos, ReferenceCache, SectionCache, TFile } from "obsidian";
 import { CalendarInfo } from "./default_options";
+import { EventCategory } from "./views/Calendar/Event.class";
+import { ThemeProps } from "./views/Calendar/Theme.class";
 
-export type CalendarOptions = {
-  view?: "week" | "month" | "day";
-  options: Options;
-  eventFilter: string;
-  template: Record<string, string>;
-  calendars: (string | CalendarInfo)[];
-};
+export type CalendarViewType = "week" | "month" | "day";
 
-export interface ObVueSettings extends CalendarOptions {
+export interface CalendarOptions {
+  repeatTimes?: number;
+  options?: Options;
+  eventFilter?: string;
+  template?: Record<string, string>;
+  calendars?: (string | CalendarInfo)[];
+}
+
+export interface ObVueSettings extends Required<Omit<CalendarOptions, "view">> {
   extensions: string[];
+  repeatTimes: number;
   options: Required<Options>;
 }
 
@@ -42,9 +47,13 @@ export type SectionCommentDataDuration = `${number}${" " | ""}${
   | unitOfTime.Base
   | ""}`;
 
-export interface SectionCommentData {
-  end: string;
-  start: string;
+export interface SectionCommentData extends ThemeProps {
+  end?: string;
+  start?: string;
+  /**
+   * Repeat Event
+   */
+  repeat?: boolean | number;
   /**
    * Moment add
    * @see {@link https://momentjs.com/docs/#/manipulating/add/}
@@ -56,7 +65,9 @@ export interface SectionCommentData {
    *    - 30 minutes
    *    - 30minutes
    */
-  duration: SectionCommentDataDuration;
+  duration?: SectionCommentDataDuration;
+
+  category?: EventCategory;
 }
 
 export interface SectionCode {
@@ -77,4 +88,9 @@ export interface CalendarSection extends SectionCache {
   data?: any;
   links?: Set<CalendarReferenceCache>;
   embeds?: Set<CalendarReferenceCache>;
+}
+
+export interface DropdownOption {
+  value: string;
+  display: string;
 }
